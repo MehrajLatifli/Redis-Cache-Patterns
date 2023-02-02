@@ -84,9 +84,6 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
 
                 _weatherDal.Add(value);
 
-
-
-                //return StatusCode(StatusCodes.Status200OK);
                 return Ok(_weatherDal.GetList().Where(o => o.IdWeather == Convert.ToInt32(value.IdWeather)));
 
             }
