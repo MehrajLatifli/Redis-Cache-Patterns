@@ -37,10 +37,11 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
 
             try
             {
-                
+
                 if (value == null)
                 {
-                        item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
+                    item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
+
                     if (item != null)
                     {
 
@@ -104,21 +105,30 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
         [HttpDelete("Delete/{idWeather}")]
         public async Task<IActionResult> Delete(int idWeather)
         {
-            if (idWeather != null)
+            try
             {
 
-                var item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
 
-                _weatherDal.Delete(item);
+                if (idWeather != null)
+                {
 
-                _cache.Delete(item.IdWeather);
+                    var item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
 
-                return StatusCode(StatusCodes.Status204NoContent);
+                    _weatherDal.Delete(item);
 
+                    _cache.Delete(item.IdWeather);
+
+                    return StatusCode(StatusCodes.Status204NoContent);
+
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status404NotFound);
+                }
             }
-            else
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status404NotFound);
+
             }
             return BadRequest();
 
