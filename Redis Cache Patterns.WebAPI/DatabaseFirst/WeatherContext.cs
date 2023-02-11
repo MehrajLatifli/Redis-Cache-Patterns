@@ -47,7 +47,7 @@ namespace LazyLoading_Pattern_WebAPI.DatabaseFirst
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string connection = @"Data Source=DESKTOP-8OJJGAH;Initial Catalog=Weather;User ID=sa;Password=admin1234; Integrated Security=True; ApplicationIntent=ReadWrite; MultipleActiveResultSets = True; Trusted_Connection=True; Trusted_Connection=True; TrustServerCertificate=True;";
+            string connection = @"Data Source=DESKTOP-JGU6DER;Initial Catalog=Weather;User ID=sa;Password=admin1234; Integrated Security=True; ApplicationIntent=ReadWrite; MultipleActiveResultSets = True; Trusted_Connection=True; Trusted_Connection=True; TrustServerCertificate=True;";
             optionsBuilder.UseSqlServer(connection);
         }
         public override int SaveChanges()

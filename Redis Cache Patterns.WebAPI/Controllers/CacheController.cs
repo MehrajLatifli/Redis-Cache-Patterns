@@ -31,33 +31,36 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
             var value = _cache.Get(idWeather);
 
 
-            var item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
+            WeatherInformation item;
+
+
 
             try
             {
-                if (item == null)
+                
+                if (value == null)
                 {
+                        item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
+                    if (item != null)
+                    {
 
-                    return StatusCode(StatusCodes.Status404NotFound);
+                        _cache.Add(item);
+
+                        return Ok(_weatherDal.GetList().Where(o => o.IdWeather == Convert.ToInt32(item.IdWeather)));
+                    }
                 }
 
                 else
                 {
-                    if (value == null)
+
+                    item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(value.IdWeather));
+
+                    if (item != null)
                     {
 
-
-                        _cache.Add(item);
-
-                        value = _cache.Get(idWeather);
-
-                        return Ok(_weatherDal.GetList().Where(o => o.IdWeather == Convert.ToInt32(value.IdWeather)));
+                        return Ok(_weatherDal.GetList().Where(o => o.IdWeather == Convert.ToInt32(item.IdWeather)));
                     }
-                    else
-                    {
 
-                        return Ok(_weatherDal.GetList().Where(o => o.IdWeather == Convert.ToInt32(value.IdWeather)));
-                    }
                 }
             }
             catch (Exception)
@@ -78,13 +81,14 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
         {
             try
             {
+                _weatherDal.Add(weatherInformation);
+
+
                 _cache.Add(weatherInformation);
 
-                var value = _cache.Get(weatherInformation.IdWeather);
 
-                _weatherDal.Add(value);
 
-                return Ok(_weatherDal.GetList().Where(o => o.IdWeather == Convert.ToInt32(value.IdWeather)));
+                return Ok(_weatherDal.GetList().Where(o => o.IdWeather == Convert.ToInt32(weatherInformation.IdWeather)));
 
             }
             catch (Exception)
@@ -100,57 +104,21 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
         [HttpDelete("Delete/{idWeather}")]
         public async Task<IActionResult> Delete(int idWeather)
         {
-            var value = _cache.Get(idWeather);
-            try
+            if (idWeather != null)
             {
-                if (_weatherDal.GetList().Any(i => i.IdWeather == idWeather))
-                {
 
-                    if (value != null)
-                    {
+                var item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
 
-                        var item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
+                _weatherDal.Delete(item);
 
+                _cache.Delete(item.IdWeather);
 
-                        value = _cache.Get(item.IdWeather);
-
-                        _cache.Delete(item.IdWeather);
-
-
-                        _weatherDal.Delete(new WeatherInformation { IdWeather = value.IdWeather });
-
-                        return StatusCode(StatusCodes.Status204NoContent);
-                    }
-
-                    else
-                    {
-
-                        var item = _weatherDal.Get(p => p.IdWeather == Convert.ToInt32(idWeather));
-
-                        _cache.Add(item);
-
-                        value = _cache.Get(idWeather);
-
-
-                        _weatherDal.Delete(new WeatherInformation { IdWeather = value.IdWeather });
-
-                        _cache.Delete(item.IdWeather);
-
-                        return StatusCode(StatusCodes.Status204NoContent);
-
-                    }
-                }
-
-                else
-                {
-                    return StatusCode(StatusCodes.Status404NotFound);
-                }
+                return StatusCode(StatusCodes.Status204NoContent);
 
             }
-            catch (Exception)
+            else
             {
-
-
+                return StatusCode(StatusCodes.Status404NotFound);
             }
             return BadRequest();
 
@@ -166,14 +134,13 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
                 {
 
 
+                    _weatherDal.Update(weatherInformation);
 
                     _cache.Update(weatherInformation);
 
 
-                    var value = _cache.Get(weatherInformation.IdWeather);
 
 
-                    _weatherDal.Update(value);
 
 
                     //return StatusCode(StatusCodes.Status200OK);
