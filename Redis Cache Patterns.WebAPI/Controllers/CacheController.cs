@@ -149,11 +149,6 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
                     _cache.Update(weatherInformation);
 
 
-
-
-
-
-                    //return StatusCode(StatusCodes.Status200OK);
                     return StatusCode(StatusCodes.Status204NoContent);
                 }
                 else
