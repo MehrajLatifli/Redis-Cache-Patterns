@@ -80,6 +80,8 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] WeatherInformation weatherInformation)
         {
+            string message = string.Empty;
+
             try
             {
                 _weatherDal.Add(weatherInformation);
@@ -92,12 +94,12 @@ namespace Redis_Cache_Patterns.WebAPI.Controllers
                 return Ok(_weatherDal.GetList().Where(o => o.IdWeather == Convert.ToInt32(weatherInformation.IdWeather)));
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-
+                message = ex.Message;
             }
-            return BadRequest();
+            return BadRequest(message);
 
         }
 

@@ -2,6 +2,7 @@
 using LazyLoading_Pattern_WebAPI.DataAccess;
 using LazyLoading_Pattern_WebAPI.DatabaseFirst;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Configuration;
 using Redis_Cache_Patterns.WebAPI.Services;
 using StackExchange.Redis;
 
@@ -33,8 +34,8 @@ builder.Services.AddScoped<IWeatherDal, EfWeatherDal>();
 builder.Services.AddSqlServer<WeatherContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = "localhost";
-    options.InstanceName = "SampleInstance";
+    options.Configuration = builder.Configuration.GetConnectionString("RedisCacheUrl");
+    options.InstanceName = "some-redis";
 });
 
 builder.Services.AddSingleton<RedisCache>();
